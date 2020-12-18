@@ -20,10 +20,10 @@
         r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
         <choose>
             <when test="nickname!=null and nickname!=''">
-                and u.nickname like concat('%',#{nickname},'%') ORDER BY u.id limit 20;
+                and u.nickname like concat('%',#{nickname},'%') ORDER BY u.id
             </when>
             <otherwise>
-                ORDER BY u.id limit 20;
+                ORDER BY u.id limit 20
             </otherwise>
         </choose>
     </select>

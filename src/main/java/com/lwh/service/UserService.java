@@ -76,7 +76,6 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getUserByNickname(String nickname){
-
         List<User> list = userMapper.getUserByNickname(nickname);
         return list;
     }
