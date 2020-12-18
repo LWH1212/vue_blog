@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwh.mapper.CategoryMapper">
+    <select id="getCategories" resultType="com.lwh.bean.Category">
+        select * from category
+    </select>
+
+    <select id="getAllCategories" resultType="com.lwh.bean.Category">
+        select * from category c
+        ORDER BY c.date DESC limit #{start},#{count};
+    </select>
+
+    <delete id="deleteCategoryByIds" >
+        delete from category where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateCategoryById" parameterType="com.lwh.bean.Category">
+        update category set cateName=#{cateName} where id = #{id}
+    </update>
+
+    <insert id="addCategory" parameterType="com.lwh.bean.Category">
+        insert into category(date,cateName) values (#{date},#{cateName})
+    </insert>
+
+    <select id="getCategoryCount" resultType="int">
+        select count(*) from category
+    </select>
+</mapper>
