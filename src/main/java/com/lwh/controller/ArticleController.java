@@ -40,8 +40,10 @@ public class ArticleController {
     public RespBean uploadImg(HttpServletRequest req, MultipartFile image){
         StringBuffer url = new StringBuffer();
         String filePath = "/blogimg/" + sdf.format(new Date());
+        String filePath1 = "D:/lwh/vue_blog/src/main/resources/static/blogimg/"+ sdf.format(new Date());
         String imgFolderPath = req.getServletContext().getRealPath(filePath);
         File imgFolder = new File(imgFolderPath);
+
         if (!imgFolder.exists()){
             imgFolder.mkdirs();
         }
@@ -53,14 +55,41 @@ public class ArticleController {
                 .append(req.getContextPath())
                 .append(filePath);
         String imgName = UUID.randomUUID() + "_" + image.getOriginalFilename().replaceAll(" ","");
+        File imgFolder1 = new File(filePath1+"/"+imgName);
+        if (!imgFolder1.getParentFile().exists()){
+            imgFolder1.getParentFile().mkdirs();
+        }
         try {
+
             IOUtils.write(image.getBytes(),new FileOutputStream(new File(imgFolder,imgName)));
             url.append("/").append(imgName);
+            image.transferTo(imgFolder1);
             return new RespBean("success", url.toString());
         }catch (IOException e){
             e.printStackTrace();
         }
         return new RespBean("error","上传失败");
+    }
+
+    @RequestMapping("toupload")
+    public String toupload(){
+        return "upload";
+    }
+
+    @RequestMapping(value = "/upload",method = RequestMethod.POST)
+    @ResponseBody
+    public String upload(MultipartFile img){
+        String filePath1 = "D:/lwh/vue_blog/src/main/resources/static/blogimg/";
+        File imgFolder1 = new File(filePath1+UUID.randomUUID()+"_"+img.getOriginalFilename());
+        if (!imgFolder1.getParentFile().exists()){
+            imgFolder1.getParentFile().mkdirs();
+        }
+        try {
+            img.transferTo(imgFolder1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "上传成功";
     }
 
     @RequestMapping(value = "/all",method = RequestMethod.GET)

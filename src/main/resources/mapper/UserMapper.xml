@@ -8,7 +8,7 @@
     </select>
 
     <insert id="reg" useGeneratedKeys="true" keyProperty="id">
-        insert into user set username=#{username},password=#{password},nickname=#{nickname},userface=#{userface}
+        insert into user set username=#{username},password=#{password},nickname=#{nickname},userface=#{userface},regTime=#{regTime}
     </insert>
 
     <update id="updateUserEmail">

@@ -4,7 +4,6 @@ import com.lwh.bean.Role;
 import com.lwh.bean.User;
 import com.lwh.mapper.RolesMapper;
 import com.lwh.mapper.UserMapper;
-import com.lwh.util.UploadImageUtil;
 import com.lwh.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -56,8 +53,11 @@ public class UserService implements UserDetailsService {
         if (loadUserByUsername != null){
             return 1;
         }
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //插入用户，插入之前先对密码进行加密
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println(timestamp);
+        user.setRegTime(timestamp);
         user.setEnabled(true);
         long result = userMapper.reg(user);
         //配置用户的角色，默认都是普通用户

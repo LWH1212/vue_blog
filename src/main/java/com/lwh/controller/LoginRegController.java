@@ -3,13 +3,16 @@ package com.lwh.controller;
 import com.lwh.bean.RespBean;
 import com.lwh.bean.User;
 import com.lwh.service.UserService;
-import com.lwh.util.UploadImageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 @RestController
 public class LoginRegController {
@@ -35,8 +38,9 @@ public class LoginRegController {
     }
 
     @PostMapping("/reg")
-    public RespBean reg(User user){
-//        UploadImageUtil.upload(userface).replaceAll("\\\\", "/");
+    public RespBean reg(User user,HttpSession session){
+        String userface = (String) session.getAttribute("userface");
+        user.setUserface("/img/"+userface);
         int result = userService.reg(user);
         if (result == 0){
             //成功
@@ -50,10 +54,19 @@ public class LoginRegController {
 
     //上传图片
     @RequestMapping(value = "/uploaduserface",method = RequestMethod.POST)
-    public RespBean uploadImg( MultipartFile image) {
-        if (image != null || !image.isEmpty()){
-            UploadImageUtil.upload(image);
+    public RespBean uploadImg(MultipartFile userface, HttpSession session) {
+        String filePath1 = "D:/lwh/vue_blog/src/main/resources/static/img/";
+        String filename = UUID.randomUUID()+"_"+userface.getOriginalFilename();
+        File imgFolder1 = new File(filePath1+ filename);
+        session.setAttribute("userface",filename);
+        if (!imgFolder1.getParentFile().exists()){
+            imgFolder1.getParentFile().mkdirs();
+        }
+        try {
+            userface.transferTo(imgFolder1);
             return new RespBean("success","上传成功");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return new RespBean("error","上传失败");
     }
