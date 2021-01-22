@@ -14,6 +14,11 @@
         </foreach>
     </insert>
 
+    <insert id="saveTags1">
+        insert into tags(tagName) values
+            (#{tags})
+    </insert>
+
     <select id="getTagsIdByTagName" resultType="long">
         select id from tags where tagName in
         <foreach collection="tagNames" item="tagName" separator="," open="(" close=")">

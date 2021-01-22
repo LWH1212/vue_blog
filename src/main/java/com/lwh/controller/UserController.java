@@ -1,10 +1,12 @@
 package com.lwh.controller;
 
 import com.lwh.bean.RespBean;
+import com.lwh.bean.User;
 import com.lwh.service.UserService;
 import com.lwh.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +51,11 @@ public class UserController {
             return new RespBean("success","开启成功");
         }
         return new RespBean("error","开启失败");
+    }
+
+    @GetMapping("/currentUserInfo")
+    public User currentUserInfo(){
+        return Util.getCurrentUser();
     }
 
 }

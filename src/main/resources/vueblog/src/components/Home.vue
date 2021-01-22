@@ -17,6 +17,48 @@
       </div>
     </el-header>
     <el-container>
+      <!-- <el-button @click="dialogFormVisible = true">ok</el-button> -->
+      <el-dialog style="width: 820px; margin: auto;" title="个人主页" :visible.sync="dialogFormVisible">
+      <el-card style="width:330px;margin-top: 10px;margin: auto;">
+        <div slot="header" style="text-align: left">
+          <span>{{currentUserInfo.nickname}}</span>
+        </div>
+        <div>
+          <div><img :src="currentUserInfo.userface" :alt="currentUserInfo.nickname" style="width: 70px;height: 70px"></div>
+          <div style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px">
+            <span>用户名:</span><span>{{currentUserInfo.username}}</span>
+          </div>
+          <div style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px">
+            <span>电子邮箱:</span><span>{{currentUserInfo.email}}</span>
+          </div>
+          <div style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px">
+            <span>注册时间:</span><span>{{currentUserInfo.regTime | formatDateTime}}</span>
+          </div>
+          <div
+            style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px;display: flex;align-items: center">
+            <span>用户状态:</span>
+            <el-switch
+              v-model="currentUserInfo.enabled"
+              active-text="启用"
+              active-color="#13ce66"
+              @change="enabledChange(currentUserInfo.enabled,currentUserInfo.id,index)"
+              inactive-text="禁用" style="font-size: 12px" disabled="disabled">
+            </el-switch>
+          </div>
+          <div style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px">
+            <span>用户角色:</span>
+            <el-tag
+              v-for="role in currentUserInfo.roles"
+              :key="role.id"
+              size="mini"
+              style="margin-right: 8px"
+              type="success">
+              {{role.name}}
+            </el-tag>
+          </div>
+        </div>
+      </el-card>
+      </el-dialog>
       <el-aside width="200px">
         <el-menu
           default-active="0"
@@ -73,6 +115,16 @@
           }, function () {
             //取消
           })
+        }else if(command == 'MyHome'){
+          this.dialogFormVisible = true;
+        }else if(command == 'sysMsg'){
+          this.$alert('为了确保所有的小伙伴都能看到完整的数据演示，数据库只开放了查询权限和部分字段的更新权限，其他权限都不具备，完整权限的演示需要大家在自己本地部署后，换一个正常的数据库用户后即可查看，这点请大家悉知!', '友情提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+            }
+          });
+        }else if(command == 'MyArticle'){
+          this.$router.replace({path:'/articleList'})
         }
       }
     },
@@ -88,10 +140,15 @@
       }, function (msg) {
         _this.currentUserName = '游客';
       });
+      getRequest("/currentUserInfo").then(function(user){
+        _this.currentUserInfo = user.data;
+      })
     },
     data(){
       return {
-        currentUserName: ''
+        currentUserName: '',
+        dialogFormVisible: false,
+        currentUserInfo: []
       }
     }
   }

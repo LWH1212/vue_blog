@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwh.mapper.CommentsMapper">
+    <select id="getCommentsByAid" parameterType="Long" resultMap="BaseResultMap">
+        select c.*,u.userface,u.nickname from comments c left join user u on c.uid=u.id where aid=#{aid}
+    </select>
+
+    <resultMap id="BaseResultMap" type="com.lwh.bean.Comments">
+        <id column="id" property="id"/>
+        <result column="aid" property="aid"/>
+        <result column="content" property="content"/>
+        <result column="publishDate" property="publishDate"/>
+        <result column="uid" property="uid"/>
+        <result column="userface" property="userface"/>
+        <result column="nickname" property="nickname"/>
+    </resultMap>
+</mapper>

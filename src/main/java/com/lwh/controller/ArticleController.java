@@ -27,7 +27,7 @@ public class ArticleController {
 
     @RequestMapping(value = "/",method = RequestMethod.POST)
     public RespBean addNewArticle(Article article){
-        int result = articleService.addnewArticle(article);
+        int result = articleService.addNewArticle(article);
         if (result == 1){
             return new RespBean("success",article.getId()+"");
         }else {

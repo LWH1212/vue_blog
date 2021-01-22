@@ -1,5 +1,5 @@
 <template>
-  <el-form  class="login-container" label-position="left"
+  <el-form style="position: relative;bottom: 120px;"  class="login-container" label-position="left"
            label-width="0px">
     <h3 class="login_title">添加用户</h3>
     <el-form-item >
