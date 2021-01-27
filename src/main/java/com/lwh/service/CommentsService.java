@@ -36,4 +36,19 @@ public class CommentsService {
         return commentsMapper.deleteComment(id);
     }
 
+    public List<Comments> getAllComments(String keywords,String keywords1,Integer page,Integer count){
+        int start = (page - 1) * count;
+        return commentsMapper.getAllComments(keywords,keywords1,start,count);
+    }
+
+    public int getAllCommentCount(String keywords,String keywords1){
+        return commentsMapper.getAllCommentCount(keywords,keywords1);
+    }
+
+    public boolean deleteCommentByIds(String ids){
+        String[] split = ids.split(",");
+        int result = commentsMapper.deleteCommentByIds(split);
+        return result == split.length;
+    }
+
 }

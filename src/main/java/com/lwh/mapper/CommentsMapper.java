@@ -22,6 +22,10 @@ public interface CommentsMapper {
 
     int deleteComment(Long id);
 
-    List<Comments> getAllComments(@Param("start") Integer start, @Param("count") Integer count);
+    List<Comments> getAllComments(@Param("keywords") String keywords,@Param("keywords1") String keywords1,@Param("start") Integer start, @Param("count") Integer count);
+
+    int getAllCommentCount(@Param("keywords") String keywords,@Param("keywords1") String keywords1);
+
+    int deleteCommentByIds(@Param("ids") String[] ids);
 
 }

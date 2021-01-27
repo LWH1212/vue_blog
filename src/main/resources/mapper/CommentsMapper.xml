@@ -16,6 +16,38 @@
         delete from comments where id=#{id}
     </delete>
 
+    <select id="getAllCommentCount" resultType="int">
+        SELECT count(*) FROM comments c,user u,article a
+        <where>
+            <if test="keywords!=null">
+                AND u.id=c.uid AND u.nickname LIKE concat('%',#{keywords},'%')
+            </if>
+            <if test="keywords1!=null">
+                AND a.id=c.aid AND a.title LIKE concat('%',#{keywords1},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getAllComments"  resultMap="BaseResultMap">
+        select c.*,u.userface,u.nickname,u.username,u.email,a.title from comments c left join user u on c.uid=u.id left join article a on a.id=c.aid
+        <where>
+            <if test="keywords!=null">
+                AND u.nickname LIKE concat('%',#{keywords},'%')
+            </if>
+            <if test="keywords1!=null">
+                AND a.title LIKE concat('%',#{keywords1},'%')
+            </if>
+        </where>
+         ORDER BY c.publishDate DESC limit #{start},#{count};
+    </select>
+
+    <delete id="deleteCommentByIds" >
+        delete from comments where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <resultMap id="BaseResultMap" type="com.lwh.bean.Comments">
         <id column="id" property="id"/>
         <result column="aid" property="aid"/>
@@ -26,5 +58,6 @@
         <result column="nickname" property="nickname"/>
         <result column="username" property="username"/>
         <result column="email" property="email"/>
+        <result column="title" property="title"/>
     </resultMap>
 </mapper>

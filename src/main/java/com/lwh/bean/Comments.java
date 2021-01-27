@@ -25,4 +25,6 @@ public class Comments {
 
     private String email;
 
+    private String title;
+
 }
