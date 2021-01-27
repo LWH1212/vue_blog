@@ -24,6 +24,8 @@ public interface UserMapper {
 
     int updateUserEnabled(@Param("enabled") Boolean enabled,@Param("uid") Long uid);
 
+    int updateUserTalk(@Param("talk") Boolean talk,@Param("uid") Long uid);
+
     int deleteUserById(Long uid);
 
     int deleteUserRoleByUid(Long id);

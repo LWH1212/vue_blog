@@ -40,6 +40,15 @@ public class UserManaController {
         }
     }
 
+    @RequestMapping(value = "/user/talk",method = RequestMethod.PUT)
+    public RespBean updateUserTalk(Boolean talk,Long uid){
+        if (userService.updateUserTalk(talk,uid) == 1){
+            return new RespBean("success","更新成功");
+        }else {
+            return new RespBean("error","更新失败");
+        }
+    }
+
     @RequestMapping(value = "/user/{uid}",method = RequestMethod.DELETE)
     public RespBean deleteUserById(@PathVariable Long uid){
         if (userService.deleteUserById(uid) == 1){

@@ -37,5 +37,7 @@ public interface ArticleMapper {
 
     List<Integer> getDataStatistics(Long uid);
 
+    List<String> getAllCategory();
+
 
 }

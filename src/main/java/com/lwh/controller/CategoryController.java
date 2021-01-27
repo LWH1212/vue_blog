@@ -2,6 +2,7 @@ package com.lwh.controller;
 
 import com.lwh.bean.Category;
 import com.lwh.bean.RespBean;
+import com.lwh.service.ArticleService;
 import com.lwh.service.CategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class CategoryController {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    ArticleService articleService;
 
     @RequestMapping(value = "getCategories",method = RequestMethod.GET)
     public List<Category> getCategories(){
@@ -35,6 +39,10 @@ public class CategoryController {
 
     @RequestMapping(value = "/{ids}", method = RequestMethod.DELETE)
     public RespBean deleteById(@PathVariable("ids") String ids) {
+        List<String> cids = articleService.getAllCategory();
+        if (cids.contains(ids)){
+            return new RespBean("error","该栏目下尚有文章，删除失败");
+        }
         boolean result = categoryService.deleteCategoryByIds(ids);
         if (result) {
             return new RespBean("success", "删除成功");

@@ -27,6 +27,8 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
+    private boolean talk;
+
     private List<Role> roles;
 
     private String email;

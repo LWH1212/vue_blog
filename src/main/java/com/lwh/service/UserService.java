@@ -59,6 +59,7 @@ public class UserService implements UserDetailsService {
         System.out.println(timestamp);
         user.setRegTime(timestamp);
         user.setEnabled(true);
+        user.setTalk(true);
         long result = userMapper.reg(user);
         //配置用户的角色，默认都是普通用户
         String[] roles = new String[]{"2"};
@@ -86,6 +87,10 @@ public class UserService implements UserDetailsService {
 
     public int updateUserEnabled(Boolean enabled,Long uid){
         return userMapper.updateUserEnabled(enabled, uid);
+    }
+
+    public int updateUserTalk(Boolean talk,Long uid){
+        return userMapper.updateUserTalk(talk, uid);
     }
 
     public int deleteUserById(Long uid){

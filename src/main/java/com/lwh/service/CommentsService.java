@@ -16,8 +16,9 @@ public class CommentsService {
     @Autowired
     CommentsMapper commentsMapper;
 
-    public List<Comments> getCommentsByAid(Long aid){
-        return commentsMapper.getCommentsByAid(aid);
+    public List<Comments> getCommentsByAid(Long aid,Integer page,Integer count){
+        int start = (page - 1) * count;
+        return commentsMapper.getCommentsByAid(aid,start,count);
     }
 
     public int addComment(Comments comments){
@@ -25,6 +26,14 @@ public class CommentsService {
         comments.setPublishDate(timestamp);
         int result = commentsMapper.addComment(comments);
         return result;
+    }
+
+    public int getCommentCount(Long aid){
+        return commentsMapper.getCommentCount(aid);
+    }
+
+    public int deleteComment(Long id){
+        return commentsMapper.deleteComment(id);
     }
 
 }

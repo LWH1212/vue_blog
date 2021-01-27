@@ -145,4 +145,9 @@ public class ArticleService {
         return articleMapper.getDataStatistics(Util.getCurrentUser().getId());
     }
 
+    //获取文章中所有的栏目
+    public List<String> getAllCategory(){
+        return articleMapper.getAllCategory();
+    }
+
 }

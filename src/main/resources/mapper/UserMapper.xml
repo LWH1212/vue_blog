@@ -8,7 +8,7 @@
     </select>
 
     <insert id="reg" useGeneratedKeys="true" keyProperty="id">
-        insert into user set username=#{username},password=#{password},nickname=#{nickname},userface=#{userface},regTime=#{regTime}
+        insert into user set username=#{username},password=#{password},nickname=#{nickname},userface=#{userface},regTime=#{regTime},talk=#{talk}
     </insert>
 
     <update id="updateUserEmail">
@@ -39,6 +39,7 @@
         <result column="nickname" property="nickname"/>
         <result column="password" property="password"/>
         <result column="enabled" property="enabled"/>
+        <result column="talk" property="talk"/>
         <result column="email" property="email"/>
         <result column="userface" property="userface"/>
         <result column="regTime" property="regTime"/>
@@ -56,6 +57,10 @@
         UPDATE user set enabled=#{enabled} WHERE id=#{uid}
     </update>
 
+    <update id="updateUserTalk">
+        UPDATE user set talk=#{talk} WHERE id=#{uid}
+    </update>
+
     <delete id="deleteUserById">
         DELETE FROM user WHERE id=#{id}
     </delete>
@@ -70,4 +75,5 @@
             (#{rid},#{id})
         </foreach>
     </insert>
+
 </mapper>
