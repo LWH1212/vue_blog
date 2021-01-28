@@ -29,6 +29,8 @@ public class User implements UserDetails {
 
     private boolean talk;
 
+    private Integer opencomment;
+
     private List<Role> roles;
 
     private String email;

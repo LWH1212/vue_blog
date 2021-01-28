@@ -41,6 +41,7 @@
         <result column="enabled" property="enabled"/>
         <result column="talk" property="talk"/>
         <result column="email" property="email"/>
+        <result column="opencomment" property="opencomment"/>
         <result column="userface" property="userface"/>
         <result column="regTime" property="regTime"/>
         <collection property="roles" ofType="com.lwh.bean.Role">
@@ -59,6 +60,14 @@
 
     <update id="updateUserTalk">
         UPDATE user set talk=#{talk} WHERE id=#{uid}
+    </update>
+
+    <update id="updateUserOpenComment">
+        UPDATE user set opencomment=1 WHERE id=#{uid}
+    </update>
+
+    <update id="updateUserCloseComment">
+        UPDATE user set opencomment=0 WHERE id=#{uid}
     </update>
 
     <delete id="deleteUserById">

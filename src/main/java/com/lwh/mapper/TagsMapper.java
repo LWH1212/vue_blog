@@ -21,7 +21,7 @@ public interface TagsMapper {
 
     int saveTags2ArticleTags(@Param("tagIds") List<Long> tagIds,@Param("aid") Long aid);
 
-    @Select("select tagName from tags")
+    @Select("select `tags.tagName` from `tags`")
     List<String> getTagsName();
 
 }

@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/admin/category/all","/admin/category/getCategories").authenticated()
-                .antMatchers("/admin/**","/reg").hasRole("超级管理员")
+                .antMatchers("/admin/**","/reg","/uploaduserface").hasRole("超级管理员")
                 .anyRequest().authenticated()//其他的路径都是登录后即可访问
                 .and().formLogin().loginPage("/login_page").successHandler(new AuthenticationSuccessHandler() {
             @Override

@@ -3,6 +3,7 @@ package com.lwh.mapper;
 import com.lwh.bean.Category;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,4 +23,7 @@ public interface CategoryMapper {
     int addCategory(Category category);
 
     int getCategoryCount();
+
+    @Select("select * from category where cateName=#{cateName}")
+    Category getCategoryByName(@Param("cateName") String cateName);
 }

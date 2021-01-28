@@ -141,4 +141,22 @@ public class ArticleController {
         return map;
     }
 
+    @GetMapping("/getArticleForFirstPage")
+    public Map<String,Object> getArticleForFirstPage(@RequestParam(value = "count",defaultValue = "3") Integer count){
+        List<Article> articles = articleService.getArticleForFirstPage(count);
+        Map<String,Object> map = new HashMap<>();
+        map.put("count",count);
+        map.put("articles",articles);
+        return map;
+    }
+
+    @RequestMapping(value = "/allArticles",method = RequestMethod.GET)
+    public Map<String,Object> getArticleByStateByAdmin(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "count",defaultValue = "6") Integer count, String keywords){
+        List<Article> articles = articleService.getArticleByState(-2,page,count,keywords);
+        Map<String,Object> map = new HashMap<>();
+        map.put("articles",articles);
+        map.put("totalCount",articleService.getArticleCountByState(1,null,keywords));
+        return map;
+    }
+
 }

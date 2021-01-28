@@ -3,6 +3,7 @@ package com.lwh.service;
 import com.lwh.bean.Category;
 import com.lwh.bean.RespBean;
 import com.lwh.mapper.CategoryMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +45,9 @@ public class CategoryService {
 
     public int getCategoryCount() {
         return categoryMapper.getCategoryCount();
+    }
+
+    public Category getCategoryByName(String cateName){
+        return categoryMapper.getCategoryByName(cateName);
     }
 }

@@ -26,6 +26,10 @@ public interface UserMapper {
 
     int updateUserTalk(@Param("talk") Boolean talk,@Param("uid") Long uid);
 
+    int updateUserOpenComment(@Param("uid") Long uid);
+
+    int updateUserCloseComment(@Param("uid") Long uid);
+
     int deleteUserById(Long uid);
 
     int deleteUserRoleByUid(Long id);

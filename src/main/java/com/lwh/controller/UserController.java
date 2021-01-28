@@ -6,10 +6,7 @@ import com.lwh.service.UserService;
 import com.lwh.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,9 +45,19 @@ public class UserController {
     @PutMapping("/updateUserEmail")
     public RespBean updateUserEmail(String email){
         if (userService.updateUserEmail(email) == 1){
+            userService.updateUserOpenComment(Util.getCurrentUser().getId());
             return new RespBean("success","开启成功");
         }
         return new RespBean("error","开启失败");
+    }
+
+    @RequestMapping(value = "/close",method = RequestMethod.PUT)
+    public RespBean updateUserClose(){
+        if (userService.updateUserCloseComment(Util.getCurrentUser().getId()) == 1){
+            return new RespBean("success","关闭成功");
+        }else {
+            return new RespBean("error","关闭失败");
+        }
     }
 
     @GetMapping("/currentUserInfo")

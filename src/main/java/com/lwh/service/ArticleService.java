@@ -150,4 +150,9 @@ public class ArticleService {
         return articleMapper.getAllCategory();
     }
 
+    //首页显示文章的时间线
+    public List<Article> getArticleForFirstPage(Integer count){
+        return articleMapper.getArticleForFirstPage(count);
+    }
+
 }

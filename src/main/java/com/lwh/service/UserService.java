@@ -93,6 +93,14 @@ public class UserService implements UserDetailsService {
         return userMapper.updateUserTalk(talk, uid);
     }
 
+    public int updateUserOpenComment(Long uid){
+        return userMapper.updateUserOpenComment(uid);
+    }
+
+    public int updateUserCloseComment(Long uid){
+        return userMapper.updateUserCloseComment(uid);
+    }
+
     public int deleteUserById(Long uid){
         return userMapper.deleteUserById(uid);
     }

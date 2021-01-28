@@ -34,6 +34,8 @@ public class Article {
 
     private String nickname;
 
+    private String userface;
+
     private String cateName;
 
     private List<Tags> tags;

@@ -39,5 +39,7 @@ public interface ArticleMapper {
 
     List<String> getAllCategory();
 
+    List<Article> getArticleForFirstPage(@Param("count") Integer count);
+
 
 }

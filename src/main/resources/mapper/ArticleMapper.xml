@@ -82,7 +82,7 @@
         </foreach>
     </delete>
     <select id="getArticleById" parameterType="Long" resultMap="BaseResultMap">
-        SELECT a.*,t.`tagName`,t.`id` AS tid,u.`nickname`,c.`cateName` FROM article a LEFT JOIN article_tags ats ON a.`id`=ats.`aid` LEFT JOIN tags t ON ats.`tid`=t.`id` LEFT JOIN user u ON a.`uid`=u.`id` LEFT JOIN category c ON a.`cid`=c.`id` WHERE a.id=#{aid}
+        SELECT a.*,t.`tagName`,t.`id` AS tid,u.userface,u.`nickname`,c.`cateName` FROM article a LEFT JOIN article_tags ats ON a.`id`=ats.`aid` LEFT JOIN tags t ON ats.`tid`=t.`id` LEFT JOIN user u ON a.`uid`=u.`id` LEFT JOIN category c ON a.`cid`=c.`id` WHERE a.id=#{aid}
     </select>
 
     <resultMap id="BaseResultMap" type="com.lwh.bean.Article">
@@ -97,6 +97,7 @@
         <result column="mdContent" property="mdContent"/>
         <result column="htmlContent" property="htmlContent"/>
         <result column="summary" property="summary"/>
+        <result column="userface" property="userface"/>
         <result column="nickname" property="nickname"/>
         <result column="cateName" property="cateName"/>
         <collection property="tags" ofType="com.lwh.bean.Tags" column="tagName">
@@ -118,5 +119,9 @@
 
     <select id="getAllCategory" resultType="String">
         select distinct (cid) from article
+    </select>
+
+    <select id="getArticleForFirstPage" resultMap="BaseResultMap">
+        select a.*,u.userface,u.nickname,c.cateName from article a,user u,category c where a.uid=u.id and a.cid=c.id and state=1 order by a.publishDate desc limit #{count}
     </select>
 </mapper>
