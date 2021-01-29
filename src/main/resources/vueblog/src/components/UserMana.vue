@@ -40,6 +40,17 @@
               inactive-text="禁用" style="font-size: 12px">
             </el-switch>
           </div>
+          <div
+            style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px;display: flex;align-items: center">
+            <span>评论禁言:</span>
+            <el-switch
+              v-model="user.talk"
+              active-text="发言"
+              active-color="#13ce66"
+              @change="talkChange(user.talk,user.id,index)"
+              inactive-text="禁言" style="font-size: 12px">
+            </el-switch>
+          </div>
           <div style="text-align: left;color:#20a0ff;font-size: 12px;margin-top: 13px">
             <span>用户角色:</span>
             <el-tag
@@ -162,6 +173,22 @@
         var _this = this;
         _this.cardloading.splice(index, 1, true)
         putRequest("/admin/user/enabled", {enabled: enabled, uid: id}).then(resp=> {
+          if (resp.status != 200) {
+            _this.$message({type: 'error', message: '更新失败!'})
+            _this.loadOneUserById(id, index);
+            return;
+          }
+          _this.cardloading.splice(index, 1, false)
+          _this.$message({type: 'success', message: '更新成功!'})
+        }, resp=> {
+          _this.$message({type: 'error', message: '更新失败!'})
+          _this.loadOneUserById(id, index);
+        });
+      },
+      talkChange(talk, id, index){
+        var _this = this;
+        _this.cardloading.splice(index, 1, true)
+        putRequest("/admin/user/talk", {talk: talk, uid: id}).then(resp=> {
           if (resp.status != 200) {
             _this.$message({type: 'error', message: '更新失败!'})
             _this.loadOneUserById(id, index);

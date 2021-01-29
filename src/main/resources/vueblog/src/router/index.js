@@ -4,6 +4,7 @@ import Login from '@/components/Login'
 import Reg from '@/components/Reg'
 import Home from '@/components/Home'
 import ArticleList from '@/components/ArticleList'
+import CommentMana from '@/components/CommentMana'
 import CateMana from '@/components/CateMana'
 import DataCharts from '@/components/DataCharts'
 import PostArticle from '@/components/PostArticle'
@@ -19,11 +20,6 @@ export default new Router({
       name: '登录',
       hidden: true,
       component: Login
-    },{
-      path: '/reg',
-      name: '注册',
-      hidden: true,
-      component: Reg
     }, {
       path: '/home',
       name: '',
@@ -88,7 +84,19 @@ export default new Router({
           }
         }
       ]
-    }, {
+    },{
+      path: '/home',
+      component: Home,
+      name: '评论管理',
+      children: [
+        {
+          path: '/commentMana',
+          iconCls: 'fa fa-edit',
+          name: '评论管理',
+          component: CommentMana
+        }
+      ]
+    },{
       path: '/home',
       component: Home,
       name: '栏目管理',

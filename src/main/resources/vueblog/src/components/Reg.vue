@@ -9,13 +9,13 @@
       </div>
     </el-form-item>
     <el-form-item >
-      <el-input type="text" v-model="user.username" auto-complete="off" placeholder="用户名"></el-input>
+      <el-input type="text" v-model.trim="user.username" auto-complete="off" placeholder="用户名"></el-input>
     </el-form-item>
 	<el-form-item>
-	  <el-input type="text" v-model="user.nickname" auto-complete="off" placeholder="昵称"></el-input>
+	  <el-input type="text" v-model.trim="user.nickname" auto-complete="off" placeholder="昵称"></el-input>
 	</el-form-item>
     <el-form-item >
-      <el-input type="password" v-model="user.password" auto-complete="off" placeholder="密码"></el-input>
+      <el-input type="password" v-model.trim="user.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-form-item style="width: 100%">
       <el-button type="primary" @click.native.prevent="submitClick" style="width: 100%">添加</el-button>
@@ -61,6 +61,7 @@
               //成功
               var json = resp.data;
               if (json.status == 'success') {
+                _this.$message({type:json.status,message:json.msg});
                 _this.$router.replace({path: '/user'});
               } else if(json.status == 'error' ){
                 _this.$alert(json.msg);
@@ -71,7 +72,7 @@
             }
           }, resp=> {
             _this.loading = false;
-            _this.$alert('找不到服务器⊙﹏⊙∥!', '失败!');
+            _this.$message({type:'error',message:'权限不足，请联系管理员！'});
           });
       },
 
@@ -91,12 +92,13 @@
                 var formData = new FormData();
                    formData.append('userface',this.files[0]);
                         uploadFileRequest("/uploaduserface", formData).then(resp=> {
+                          var _this = this;
                           var json = resp.data;
                           if (json.status == 'success') {
-                //            _this.$refs.md.$imgUpdateByUrl(pos, json.msg)
-                           this.$message({type: json.status, message: json.msg});
+                            // this.$refs.md.$imgUpdateByUrl(pos, json.msg)
+                            _this.$message({type: json.status, message: json.msg});
                           } else {
-                            this.$message({type: json.status, message: json.msg});
+                            _this.$message({type: json.status, message: json.msg});
                           }
                         });
             } else {

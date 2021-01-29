@@ -2,15 +2,19 @@
   <el-container>
     <el-header class="cate_mana_header">
       <el-input
-        placeholder="请输入栏目名称"
-        v-model.trim="cateName" style="width: 200px;">
+        placeholder="通过所属文章搜索评论..."
+        v-model.trim="keywords1" style="width: 200px;">
       </el-input>
-      <el-button type="primary" size="medium" style="margin-left: 10px" @click="addNewCate">新增栏目</el-button>
+      <el-input
+        placeholder="通过评论人搜索评论..."
+        v-model.trim="keywords" style="width: 200px;">
+      </el-input>
+      <el-button type="primary" size="medium" icon="el-icon-search" style="margin-left: 10px" @click="searchClick">搜索</el-button>
     </el-header>
     <el-main class="cate_mana_main">
       <el-table
         ref="multipleTable"
-        :data="categories"
+        :data="comments"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChange" v-loading="loading">
@@ -24,21 +28,41 @@
           width="120" align="left">
         </el-table-column>
         <el-table-column
-          label="栏目名称"
-          prop="cateName"
+          label="所属文章"
+          width="120" align="left">
+          <template slot-scope="scope"><span style="color: #409eff;cursor: pointer" @click="itemClick(scope.row)">{{ scope.row.title}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="评论人"
+          prop="nickname"
           width="120" align="left">
         </el-table-column>
         <el-table-column
-          prop="date"
-          label="启用时间" align="left">
-          <template slot-scope="scope">{{ scope.row.date | formatDate}}</template>
+          label="评论内容"
+          width="120" align="left">
+          <template slot-scope="scope">
+            <el-popover
+              placement="right"
+              width="400"
+              trigger="click">
+                <span>{{scope.row.content}}</span>
+                <span v-show="scope.row.content.length > 10" style="color: #909399;cursor: pointer" slot="reference">
+                  {{ scope.row.content.substring(0,10)}}...
+                </span>
+                <span v-show="scope.row.content.length < 10" style="color: #909399;cursor: pointer" slot="reference">
+                  {{ scope.row.content.substring(0,10)}}
+                </span>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="publishDate"
+          label="评论时间" align="left">
+          <template slot-scope="scope">{{ scope.row.publishDate | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="操作" align="left">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">编辑
-            </el-button>
             <el-button
               size="mini"
               type="danger"
@@ -48,14 +72,14 @@
         </el-table-column>
       </el-table>
       <el-button type="danger" :disabled="this.selItems.length==0" style="margin-top: 10px;width: 100px;"
-                 @click="deleteAll" v-if="this.categories.length>0">批量删除
+                 @click="deleteAll" v-if="this.comments.length>0">批量删除
       </el-button>
       <span></span>
       <el-pagination
         background
         :page-size="pageSize"
         layout="prev, pager, next"
-        :total="totalCount" @current-change="currentChange" v-show="this.categories.length>0">
+        :total="totalCount" @current-change="currentChange" v-show="this.comments.length>0">
       </el-pagination>
     </el-main>
   </el-container>
@@ -67,26 +91,11 @@
   import {getRequest} from '../utils/api'
   export default{
     methods: {
-      addNewCate(){
-        this.loading = true;
-        var _this = this;
-        postRequest('/admin/category/', {cateName: this.cateName}).then(resp=> {
-          if (resp.status == 200) {
-            var json = resp.data;
-            _this.$message({type: json.status, message: json.msg});
-            _this.cateName = '';
-            _this.refresh(1,this.pageSize);
-          }
-          _this.loading = false;
-        }, resp=> {
-          if (resp.response.status == 403) {
-            _this.$message({
-              type: 'error',
-              message: resp.response.data
-            });
-          }
-          _this.loading = false;
-        });
+      searchClick(){
+        this.refresh(1, this.pageSize);
+      },
+      itemClick(row){
+        this.$router.push({path: '/blogDetail', query: {aid: row.aid}})
       },
       deleteAll(){
         var _this = this;
@@ -100,7 +109,7 @@
           for (var i = 0; i < selItems.length; i++) {
             ids += selItems[i].id + ",";
           }
-          _this.deleteCate(ids.substring(0, ids.length - 1));
+          _this.deleteComment(ids.substring(0, ids.length - 1));
         }).catch(() => {
           //取消
           _this.loading = false;
@@ -110,62 +119,25 @@
       handleSelectionChange(val) {
         this.selItems = val;
       },
-      handleEdit(index, row){
-        var _this = this;
-        this.$prompt('请输入新名称', '编辑', {
-          confirmButtonText: '更新',
-          inputValue: row.cateName,
-          cancelButtonText: '取消'
-        }).then(({value}) => {
-          //value就是输入值
-          if (value == null || value.trim().length == 0) {
-            _this.$message({
-              type: 'info',
-              message: '数据不能为空!'
-            });
-          } else {
-            _this.loading = true;
-            putRequest("/admin/category/", {id: row.id, cateName: value}).then(resp=> {
-              var json = resp.data;
-              _this.$message({
-                type: json.status,
-                message: json.msg
-              });
-              _this.refresh(1,this.pageSize);
-            }, resp=> {
-              if (resp.response.status == 403) {
-                _this.$message({
-                  type: 'error',
-                  message: resp.response.data
-                });
-              }
-              _this.loading = false;
-            });
-          }
-        }).catch(() => {
-            _this.loading = false;
-            _this.$message({type:'info',message:'已取消编辑'});
-        });
-      },
       handleDelete(index, row){
         let _this = this;
-        this.$confirm('确认删除 ' + row.cateName + ' ?', '提示', {
+        this.$confirm('确认删除该评论？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          _this.deleteCate(row.id);
+          _this.deleteComment(row.id);
         }).catch(() => {
           //取消
           _this.loading = false;
           _this.$message({type:'info',message:'已取消删除'});
         });
       },
-      deleteCate(ids){
+      deleteComment(ids){
         var _this = this;
         this.loading = true;
         //删除
-        deleteRequest("/admin/category/" + ids).then(resp=> {
+        deleteRequest("/admin/comment/deleteComments/" + ids).then(resp=> {
           var json = resp.data;
           _this.$message({
             type: json.status,
@@ -179,11 +151,6 @@
               type: 'error',
               message: resp.response.data
             });
-          // } else if (resp.response.status == 500) {
-          //   _this.$message({
-          //     type: 'error',
-          //     message: '该栏目下尚有文章，删除失败!'
-          //   });
           }
         })
       },
@@ -195,11 +162,10 @@
       },
       refresh(page,count){
         let _this = this;
-        getRequest("/admin/category/all"+"?page="+page+"&count="+count).then(resp=> {
+        getRequest("/admin/comment/getAllComments"+"?page="+page+"&count="+count+"&keywords="+this.keywords+"&keywords1="+this.keywords1).then(resp=> {
           _this.loading = false;
-          _this.categories = resp.data.categories;
+          _this.comments = resp.data.comments;
           _this.totalCount = resp.data.totalCount;
-
         }, resp=> {
           if (resp.response.status == 403) {
             _this.$message({
@@ -224,8 +190,9 @@
     },
     data(){
       return {
-        cateName: '',
-        categories: [],
+        keywords: '',
+        keywords1: '',
+        comments: [],
         selItems: [],
         currentPage: 1,
         totalCount: -1,

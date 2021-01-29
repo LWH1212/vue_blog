@@ -14,7 +14,7 @@
       <el-input
         placeholder="通过标题搜索该分类下的博客..."
         prefix-icon="el-icon-search"
-        v-model="keywords" style="width: 400px" size="mini">
+        v-model.trim="keywords" style="width: 400px" size="mini">
       </el-input>
       <el-button type="primary" icon="el-icon-search" size="mini" style="margin-left: 3px" @click="searchClick">搜索
       </el-button>
@@ -150,8 +150,9 @@
         var _this = this;
         var url = '';
         if (this.state == -2) {
-          url = "/admin/article/all" + "?page=" + page + "&count=" + count + "&keywords=" + this.keywords;
-        } else {
+          url = "/article/allArticles" + "?page=" + page + "&count=" + count + "&keywords=" + this.keywords;
+        }
+        else {
           url = "/article/all?state=" + this.state + "&page=" + page + "&count=" + count + "&keywords=" + this.keywords;
         }
         getRequest(url).then(resp=> {

@@ -53,11 +53,11 @@ public class CategoryController {
     @RequestMapping(value = "/",method = RequestMethod.POST)
     public RespBean addNewCate(Category category){
         if ("".equals(category.getCateName()) || category.getCateName() == null){
-            return new RespBean("error","请输入栏目名称！");
+            return new RespBean("info","请输入栏目名称！");
         }
         Category cateName = categoryService.getCategoryByName(category.getCateName());
         if (cateName !=null){
-            return new RespBean("error","该栏目已存在");
+            return new RespBean("warning","该栏目已存在");
         }
         int result = categoryService.addCategory(category);
         if (result == 1){
@@ -70,7 +70,7 @@ public class CategoryController {
     public RespBean updateCate(Category category){
         Category cateName = categoryService.getCategoryByName(category.getCateName());
         if (cateName !=null){
-            return new RespBean("error","该栏目已存在,修改失败！");
+            return new RespBean("info","栏目不变");
         }
         int i = categoryService.updateCategoryById(category);
         if (i == 1){

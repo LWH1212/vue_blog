@@ -29,25 +29,57 @@
     <el-collapse style="text-align: left;" v-model="activeNames">
       <el-collapse-item title="评论列表" name="1">
         <div v-for="comment in comments">
-          <el-card class="box-card" style="height: 80px;">
-            <div class="text item" style="display: inline-block;">
-              <span><img :src="comment.userface" :alt="comment.nickname" style="width: 50px;height: 50px;border-radius: 50%;"></span>
-              <div style="display: inline-block;margin-left: 10px;position: relative;bottom: 10px;">
+          <el-card class="box-card">
+            <div class="text item" style="display: inline-block;width: 100%;">
+              <div style="display: inline-block;width: 5%;">
+                <el-popover
+                    placement="top"
+                    title="用户信息"
+                    width="200"
+                    trigger="hover">
+                    <span>用户名：{{comment.username}}</span><br>
+                    <span v-show="comment.email != null">&nbsp;&nbsp;&nbsp;邮箱：{{comment.email}}</span>
+                    <span v-show="comment.email == null">&nbsp;&nbsp;&nbsp;邮箱：暂无</span>
+                    <img slot="reference" :src="comment.userface" :alt="comment.nickname" style="width: 50px;height: 50px;border-radius: 50%;">
+                  </el-popover>
+              </div>
+              <div style="display: inline-block;margin-left: 10px;width: 85%;">
                 <span>{{comment.publishDate | formatDateTime}}</span><br>
                 <span>{{comment.nickname}}</span>:
                 <span style="font-size: 20px;">{{comment.content}}</span>
               </div>
+              <div style="display: inline-block;width: 5%;">
+                <el-button v-show="currentUserId == comment.uid" style="float: right; padding: 3px 0;color: #ff0509" type="text" icon="el-icon-delete"
+                           @click="deleteComment(comment.id)">删除
+                </el-button>
+              </div>
             </div>
           </el-card>
         </div>
+        <div v-show="this.comments.length == 0">
+          <div style="font-size: 30px; background-color: #909399;text-align: center;margin-top: 10px;" >暂无评论</div>
+        </div>
+        <el-pagination style="float: right;margin: 10px;"
+          background
+          :page-size="pageSize"
+          layout="prev, pager, next"
+          :total="totalCount" @current-change="currentChange" v-show="this.comments.length>0">
+        </el-pagination>
       </el-collapse-item>
     </el-collapse>
     </el-col>
-    <el-col style="margin-top: 15px;">
+    <el-col style="margin-top: 15px;" v-show="article.state==1">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
         <el-form-item prop="pinglun" label-width="0">
         <el-input type="hidden" v-model="currentUserId" style="display: none;"></el-input>
-        <el-input type="textarea" placeholder="请输入评论内容" v-model="ruleForm.pinglun"></el-input>
+        <el-input
+          type="textarea"
+          placeholder="请输入评论内容"
+          v-model.trim="ruleForm.pinglun"
+          :maxlength="100"
+          show-word-limit
+        >
+        </el-input>
         </el-form-item>
         <el-button type="primary" style="float: right;" @click="submitForm('ruleForm')">发表评论</el-button>
       </el-form>
@@ -57,21 +89,24 @@
 <script>
   import {getRequest} from '../utils/api'
   import {postRequest} from '../utils/api'
+  import {deleteRequest} from '../utils/api'
   export default{
     inject:["reload"],
     methods: {
       goBack(){
         this.$router.go(-1);
       },
-      // handleChange(val) {
-      //         console.log(val);
-      // },
+      //翻页
+      currentChange(currentPage){
+        this.currentPage = currentPage;
+        this.loading = true;
+        this.loadComments(currentPage, this.pageSize);
+      },
       submitForm(formName) {
               this.$refs[formName].validate((valid) => {
                 if (valid) {
                   var _this = this;
                   this.loading = true;
-                  this.activeNames = "1";
                     postRequest('/addComment',
                     {
                       aid: _this.article.id,
@@ -85,19 +120,12 @@
                         var json = resp.data;
                         var aid = this.$route.query.aid;
                         if (json.status == 'success') {
+                          this.activeNames = "1";
                           _this.$message({type: 'success', message: json.msg});
                           this.$refs[formName].resetFields();
-                          getRequest("/getComments/" + aid).then(resp=> {
-                            if (resp.status == 200) {
-                              _this.comments = resp.data;
-                            }
-                            _this.loading = false;
-                          }, resp=> {
-                            _this.loading = false;
-                            _this.$message({type: 'error', message: '页面加载失败!'});
-                          });
+                          this.loadComments(1,this.pageSize);
                         } else if(json.status == 'error' ){
-                          _this.$message(json.msg);
+                          _this.$message({type:'warning',message:json.msg});
                         }
                       } else {
                         //失败
@@ -113,8 +141,52 @@
                 }
               });
       },
+
+      deleteComment(id){
+        var _this = this;
+        this.$confirm('删除该评论, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          _this.loading = true;
+          deleteRequest("/deleteComment/" + id).then(resp=> {
+            if (resp.status == 200 && resp.data.status == 'success') {
+              _this.$message({type: 'success', message: '删除成功!'})
+              _this.loadComments(1,this.pageSize);
+              return;
+            }
+            _this.loading = false;
+            _this.$message({type: 'error', message: '删除失败!'})
+          }, resp=> {
+            _this.loading = false;
+            _this.$message({type: 'error', message: '删除失败!'})
+          });
+        }).catch(() => {
+          _this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+
+      loadComments(page,count){
+        var aid = this.$route.query.aid;
+        var _this = this;
+        getRequest("/getComments" +"?aid="+ aid+"&page="+page+"&count="+count).then(resp=> {
+          if (resp.status == 200) {
+            _this.comments = resp.data.comments;
+            _this.totalCount = resp.data.totalCount;
+          }
+          _this.loading = false;
+        }, resp=> {
+          _this.loading = false;
+          _this.$message({type: 'error', message: '页面加载失败!'});
+        });
       }
 
     },
@@ -132,15 +204,7 @@
         _this.loading = false;
         _this.$message({type: 'error', message: '页面加载失败!'});
       });
-      getRequest("/getComments/" + aid).then(resp=> {
-        if (resp.status == 200) {
-          _this.comments = resp.data;
-        }
-        _this.loading = false;
-      }, resp=> {
-        _this.loading = false;
-        _this.$message({type: 'error', message: '页面加载失败!'});
-      });
+      _this.loadComments(1,this.pageSize);
       getRequest("/currentUserId").then(function(user){
         _this.currentUserId = user.data;
       })
@@ -151,6 +215,9 @@
         loading: false,
         activeName: '',
         activeNames: '',
+        currentPage: 1,
+        totalCount: -1,
+        pageSize: 5,
         comments: [],
         currentUserId: '',
         ruleForm:{

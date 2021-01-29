@@ -3,7 +3,7 @@
     <el-main class="main">
       <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
         <el-tab-pane label="全部文章" name="all">
-          <blog_table state="-1" :showEdit="false" :showDelete="false" :showRestore="false" :activeName="activeName"></blog_table>
+          <blog_table state="-2" :showEdit="false" :showDelete="false" :showRestore="false" :activeName="activeName"></blog_table>
         </el-tab-pane>
         <el-tab-pane label="已发表" name="post">
           <blog_table state="1" :showEdit="true" :showDelete="true" :showRestore="false" :activeName="activeName"></blog_table>

@@ -8,9 +8,10 @@
             prop="email"
             label="开启博客评论通知"
             :rules="[{type: 'email', message: '邮箱格式不对哦!'}]">
-            <el-input type="email" v-model.email="emailValidateForm.email" auto-complete="off" style="width: 300px"
+            <el-input id="youxiang" type="email" v-model.email="emailValidateForm.email" auto-complete="off" style="width: 300px"
                       placeholder="请输入邮箱地址..." size="mini"></el-input>
-            <el-button type="primary" @click="submitForm('emailValidateForm')" size="mini">确定</el-button>
+            <el-button id="close" type="danger" @click="closeCommit()" size="mini">关闭</el-button>
+            <el-button id="open" type="primary" @click="submitForm('emailValidateForm')" size="mini">开启</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -46,6 +47,8 @@
             putRequest("/updateUserEmail", {email: _this.emailValidateForm.email}).then(resp=> {
               _this.loading = false;
               if (resp.status == 200) {
+                var youxiang =document.getElementById('youxiang');
+                youxiang.removeAttribute("disabled");
                 _this.$message({type: resp.data.status, message: resp.data.msg});
               } else {
                 _this.$message({type: 'error', message: '开启失败!'});
@@ -59,6 +62,19 @@
             return false;
           }
         });
+      },
+
+      closeCommit(){
+        putRequest("/close").then(resp=> {
+          this.loading = false;
+          if (resp.status == 200){
+            var youxiang =document.getElementById('youxiang');
+            youxiang.setAttribute("disabled","disabled");
+            this.$message({type: resp.data.status, message: resp.data.msg});
+          }else{
+            this.$message({type: 'error', message: '关闭失败!'});
+          }
+        })
       }
     }
   }
